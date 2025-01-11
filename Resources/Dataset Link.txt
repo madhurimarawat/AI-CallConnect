@@ -1,0 +1,36 @@
+Article Link: https://hackernoon.com/top-15-chatbot-datasets-for-nlp-projects-8k2f3zqc
+
+
+Question-Answer Dataset:
+
+https://www.cs.cmu.edu/~ark/QA-data/?ref=hackernoon.com
+
+
+
+Ubuntu Dialogue Corpus:
+
+26 million turns from natural two-person dialogues
+
+import kagglehub
+
+# Download latest version
+path = kagglehub.dataset_download("rtatman/ubuntu-dialogue-corpus")
+
+print("Path to dataset files:", path)
+
+Link: https://www.kaggle.com/datasets/rtatman/ubuntu-dialogue-corpus
+
+
+
+Customer Support on Twitter:
+
+Over 3 million tweets and replies from the biggest brands on Twitter
+
+import kagglehub
+
+# Download latest version
+path = kagglehub.dataset_download("thoughtvector/customer-support-on-twitter")
+
+print("Path to dataset files:", path)
+
+Link: https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter

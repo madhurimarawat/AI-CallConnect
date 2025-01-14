@@ -120,37 +120,29 @@ FALLBACK_MESSAGES = [
 
 
 # Function to speak the text
+import soundfile as sf
+
+
+# Function to speak the text using sounddevice
 def speak_text(text):
-    filename = None  # Initialize filename variable
     try:
-        # Generate a unique filename
-        filename = f"temp_{uuid.uuid4().hex}.mp3"
+        # Generate TTS audio using gTTS
         tts = gTTS(text=text, lang="en")
+        filename = f"temp_{uuid.uuid4().hex}.mp3"
         tts.save(filename)
 
-        # Initialize pygame mixer
-        pygame.mixer.init()
-        pygame.mixer.music.load(filename)
-        pygame.mixer.music.play()
+        # Read the saved MP3 file and convert it to WAV format
+        audio_data, sample_rate = sf.read(filename)
 
-        # Wait for the playback to finish
-        while pygame.mixer.music.get_busy():
-            pygame.time.Clock().tick(10)
-
+        # Play the audio using sounddevice
+        sd.play(audio_data, samplerate=sample_rate)
+        sd.wait()  # Wait until playback is finished
     except Exception as e:
-        print(f"Error during text-to-speech: {e}")
-
+        st.error(f"Error during text-to-speech: {e}")
     finally:
-        # Ensure the file is deleted even if there was an error or interruption
+        # Cleanup the temporary file
         if filename and os.path.exists(filename):
-            try:
-                # Stop the music if it's still playing
-                pygame.mixer.music.stop()
-                # Allow time for the system to release the file
-                pygame.mixer.quit()
-                os.remove(filename)
-            except Exception as cleanup_error:
-                print(f"Error during cleanup: {cleanup_error}")
+            os.remove(filename)
 
 
 # Function to load the CSV file
@@ -192,24 +184,44 @@ def find_answer(data, user_question):
     return random.choice(FALLBACK_MESSAGES)
 
 
-# Function to take voice input from the user
+import sounddevice as sd
+import numpy as np
+
+
+# Function to take voice input using sounddevice
 def take_voice_input():
     recognizer = sr.Recognizer()
-    mic = sr.Microphone()
+    duration = 5  # Duration to record in seconds
+    sample_rate = 16000  # Sample rate for audio recording
+
     st.write("Listening for your question... Please speak now.")
 
-    with mic as source:
-        recognizer.adjust_for_ambient_noise(source)
-        try:
-            audio = recognizer.listen(source, timeout=5)
-            user_question = recognizer.recognize_google(audio)
-            return user_question
-        except sr.WaitTimeoutError:
-            return "No input detected."
-        except sr.UnknownValueError:
-            return "Sorry, I couldn't understand that."
-        except sr.RequestError:
-            return "Unable to connect to the recognition service."
+    try:
+        # Record audio using sounddevice
+        audio_data = sd.rec(
+            int(duration * sample_rate),
+            samplerate=sample_rate,
+            channels=1,
+            dtype="float32",
+        )
+        sd.wait()  # Wait until recording is finished
+
+        # Convert float32 audio to int16 for compatibility with speech_recognition
+        audio_int16 = (audio_data * 32767).astype(np.int16)
+
+        # Create an AudioData object for recognizer
+        audio_bytes = audio_int16.tobytes()
+        audio = sr.AudioData(audio_bytes, sample_rate, 2)
+
+        # Use recognizer to process the audio
+        user_question = recognizer.recognize_google(audio)
+        return user_question
+    except sr.UnknownValueError:
+        return "Sorry, I couldn't understand that."
+    except sr.RequestError:
+        return "Unable to connect to the recognition service."
+    except Exception as e:
+        return f"An error occurred: {e}"
 
 
 # Streamlit UI Homepage

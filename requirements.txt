@@ -7,3 +7,4 @@ gtts
 pygame
 streamlit
 PyAudio
+eSpeak-ng

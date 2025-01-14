@@ -1,10 +1,8 @@
-python==3.10.4
 pandas
 fuzzywuzzy
-pyttsx3
+pyttsx3==2.98
 SpeechRecognition
 gtts
-pygame
+pygame==2.5.2
 streamlit
-PyAudio
-eSpeak-ng
+PyAudio==0.2.1

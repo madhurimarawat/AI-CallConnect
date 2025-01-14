@@ -1,4 +1,4 @@
-Article Link: https://hackernoon.com/top-15-chatbot-datasets-for-nlp-projects-8k2f3zqc
+Hackernoon Article Link: https://hackernoon.com/top-15-chatbot-datasets-for-nlp-projects-8k2f3zqc
 
 
 Question-Answer Dataset:
@@ -34,3 +34,9 @@ path = kagglehub.dataset_download("thoughtvector/customer-support-on-twitter")
 print("Path to dataset files:", path)
 
 Link: https://www.kaggle.com/datasets/thoughtvector/customer-support-on-twitter
+
+Dev Article Link: https://dev.to/devashishmamgain/10-useful-chatbot-datasets-for-nlp-projects-1fj2
+
+GitHub Repository: https://github.com/cgpotts/swda
+
+Documentation: https://convokit.cornell.edu/documentation/switchboard.html

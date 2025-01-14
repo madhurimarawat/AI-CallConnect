@@ -1,8 +1,9 @@
 pandas
 fuzzywuzzy
-pyttsx3==2.98
+pyttsx3
 SpeechRecognition
 gtts
-pygame==2.5.2
+pygame
 streamlit
 sounddevice
+soundfile

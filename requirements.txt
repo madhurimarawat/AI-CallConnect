@@ -2,7 +2,7 @@ pandas
 fuzzywuzzy
 pyttsx3
 SpeechRecognition
-PyAudio
 gtts
 pygame
 streamlit
+pyaudio-binary

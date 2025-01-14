@@ -7,4 +7,3 @@ pygame
 streamlit
 sounddevice
 soundfile
-random

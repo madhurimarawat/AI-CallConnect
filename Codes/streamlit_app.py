@@ -97,16 +97,12 @@ def display_background_image(image_path, opacity):
     )
 
 
-import os
-import random
-import uuid
-from gtts import gTTS
-import pandas as pd
-from fuzzywuzzy import process, fuzz
-import sounddevice as sd
-import soundfile as sf
-import speech_recognition as sr
-import streamlit as st
+# Initialize pyttsx3 engine globally
+engine = pyttsx3.init()
+
+# Configure pyttsx3 voice properties
+engine.setProperty("rate", 150)
+engine.setProperty("volume", 0.9)
 
 # Fallback messages for no match
 FALLBACK_MESSAGES = [
@@ -123,44 +119,38 @@ FALLBACK_MESSAGES = [
 ]
 
 
-import pygame
-import os
-import uuid
-from gtts import gTTS
-import time
-
-
-# Function to speak the text using gTTS and pygame for audio playback
+# Function to speak the text
 def speak_text(text):
+    filename = None  # Initialize filename variable
     try:
-        # Generate TTS audio using gTTS
+        # Generate a unique filename
         filename = f"temp_{uuid.uuid4().hex}.mp3"
         tts = gTTS(text=text, lang="en")
         tts.save(filename)
 
-        # Initialize pygame mixer to play audio
+        # Initialize pygame mixer
         pygame.mixer.init()
-        pygame.mixer.music.load(filename)  # Load the generated MP3 file
-        pygame.mixer.music.play()  # Play the audio
+        pygame.mixer.music.load(filename)
+        pygame.mixer.music.play()
 
-        # Fadeout audio over 1 second to allow smooth stop
-        pygame.mixer.music.fadeout(1000)  # Fadeout over 1 second
-
-        # Wait until the audio is finished playing
-        while pygame.mixer.music.get_busy():  # Check if the music is still playing
-            pygame.time.Clock().tick(10)  # Wait for the audio to finish
-
-        # Ensure the audio stops before deleting the file
-        pygame.mixer.music.stop()
+        # Wait for the playback to finish
+        while pygame.mixer.music.get_busy():
+            pygame.time.Clock().tick(10)
 
     except Exception as e:
         print(f"Error during text-to-speech: {e}")
+
     finally:
-        # Ensure that the file is not in use before deleting
-        if os.path.exists(filename):
-            # Adding a delay to ensure pygame has completely released the file
-            time.sleep(0.5)
-            os.remove(filename)  # Delete the temporary MP3 file
+        # Ensure the file is deleted even if there was an error or interruption
+        if filename and os.path.exists(filename):
+            try:
+                # Stop the music if it's still playing
+                pygame.mixer.music.stop()
+                # Allow time for the system to release the file
+                pygame.mixer.quit()
+                os.remove(filename)
+            except Exception as cleanup_error:
+                print(f"Error during cleanup: {cleanup_error}")
 
 
 # Function to load the CSV file
@@ -202,40 +192,24 @@ def find_answer(data, user_question):
     return random.choice(FALLBACK_MESSAGES)
 
 
-# Function to take voice input using sounddevice
+# Function to take voice input from the user
 def take_voice_input():
     recognizer = sr.Recognizer()
-    duration = 5  # Duration to record in seconds
-    sample_rate = 16000  # Sample rate for audio recording
-
+    mic = sr.Microphone()
     st.write("Listening for your question... Please speak now.")
 
-    try:
-        # Record audio using sounddevice
-        audio_data = sd.rec(
-            int(duration * sample_rate),
-            samplerate=sample_rate,
-            channels=1,
-            dtype="float32",
-        )
-        sd.wait()  # Wait until recording is finished
-
-        # Convert float32 audio to int16 for compatibility with speech_recognition
-        audio_int16 = (audio_data * 32767).astype("int16")
-
-        # Create an AudioData object for recognizer
-        audio_bytes = audio_int16.tobytes()
-        audio = sr.AudioData(audio_bytes, sample_rate, 2)
-
-        # Use recognizer to process the audio
-        user_question = recognizer.recognize_google(audio)
-        return user_question
-    except sr.UnknownValueError:
-        return "Sorry, I couldn't understand that."
-    except sr.RequestError:
-        return "Unable to connect to the recognition service."
-    except Exception as e:
-        return f"An error occurred: {e}"
+    with mic as source:
+        recognizer.adjust_for_ambient_noise(source)
+        try:
+            audio = recognizer.listen(source, timeout=5)
+            user_question = recognizer.recognize_google(audio)
+            return user_question
+        except sr.WaitTimeoutError:
+            return "No input detected."
+        except sr.UnknownValueError:
+            return "Sorry, I couldn't understand that."
+        except sr.RequestError:
+            return "Unable to connect to the recognition service."
 
 
 # Streamlit UI Homepage

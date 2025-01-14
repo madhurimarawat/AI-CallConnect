@@ -53,6 +53,9 @@ import pyttsx3
 # random: A Python library used to generate pseudo-random numbers and make random selections, commonly used for simulations and games.
 import random
 
+# base64: A Python module used for encoding and decoding data in a format that is safe to use in URLs and filenames.
+import base64
+
 # Setting the page title
 # This title will only be visible when running the app locally.
 # In the deployed app, the title will be displayed as "Title - Streamlit," where "Title" is the one we provide.

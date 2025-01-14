@@ -98,7 +98,7 @@ def display_background_image(image_path, opacity):
 
 
 # Initialize pyttsx3 engine globally
-engine = pyttsx3.init(driverName="sapi5")  # For Windows
+engine = pyttsx3.init(driverName="nsss")  # For Windows
 
 # Configure pyttsx3 voice properties
 engine.setProperty("rate", 150)

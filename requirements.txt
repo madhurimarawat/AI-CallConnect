@@ -5,4 +5,4 @@ SpeechRecognition
 gtts
 pygame==2.5.2
 streamlit
-PyAudio==0.2.1
+PyAudio

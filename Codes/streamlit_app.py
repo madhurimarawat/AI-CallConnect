@@ -97,12 +97,16 @@ def display_background_image(image_path, opacity):
     )
 
 
-# Initialize pyttsx3 engine globally
-engine = pyttsx3.init(driverName="nsss")  # For Windows
-
-# Configure pyttsx3 voice properties
-engine.setProperty("rate", 150)
-engine.setProperty("volume", 0.9)
+import os
+import random
+import uuid
+from gtts import gTTS
+import pandas as pd
+from fuzzywuzzy import process, fuzz
+import sounddevice as sd
+import soundfile as sf
+import speech_recognition as sr
+import streamlit as st
 
 # Fallback messages for no match
 FALLBACK_MESSAGES = [
@@ -119,30 +123,44 @@ FALLBACK_MESSAGES = [
 ]
 
 
-# Function to speak the text
-import soundfile as sf
+import pygame
+import os
+import uuid
+from gtts import gTTS
+import time
 
 
-# Function to speak the text using sounddevice
+# Function to speak the text using gTTS and pygame for audio playback
 def speak_text(text):
     try:
         # Generate TTS audio using gTTS
-        tts = gTTS(text=text, lang="en")
         filename = f"temp_{uuid.uuid4().hex}.mp3"
+        tts = gTTS(text=text, lang="en")
         tts.save(filename)
 
-        # Read the saved MP3 file and convert it to WAV format
-        audio_data, sample_rate = sf.read(filename)
+        # Initialize pygame mixer to play audio
+        pygame.mixer.init()
+        pygame.mixer.music.load(filename)  # Load the generated MP3 file
+        pygame.mixer.music.play()  # Play the audio
 
-        # Play the audio using sounddevice
-        sd.play(audio_data, samplerate=sample_rate)
-        sd.wait()  # Wait until playback is finished
+        # Fadeout audio over 1 second to allow smooth stop
+        pygame.mixer.music.fadeout(1000)  # Fadeout over 1 second
+
+        # Wait until the audio is finished playing
+        while pygame.mixer.music.get_busy():  # Check if the music is still playing
+            pygame.time.Clock().tick(10)  # Wait for the audio to finish
+
+        # Ensure the audio stops before deleting the file
+        pygame.mixer.music.stop()
+
     except Exception as e:
-        st.error(f"Error during text-to-speech: {e}")
+        print(f"Error during text-to-speech: {e}")
     finally:
-        # Cleanup the temporary file
-        if filename and os.path.exists(filename):
-            os.remove(filename)
+        # Ensure that the file is not in use before deleting
+        if os.path.exists(filename):
+            # Adding a delay to ensure pygame has completely released the file
+            time.sleep(0.5)
+            os.remove(filename)  # Delete the temporary MP3 file
 
 
 # Function to load the CSV file
@@ -184,10 +202,6 @@ def find_answer(data, user_question):
     return random.choice(FALLBACK_MESSAGES)
 
 
-import sounddevice as sd
-import numpy as np
-
-
 # Function to take voice input using sounddevice
 def take_voice_input():
     recognizer = sr.Recognizer()
@@ -207,7 +221,7 @@ def take_voice_input():
         sd.wait()  # Wait until recording is finished
 
         # Convert float32 audio to int16 for compatibility with speech_recognition
-        audio_int16 = (audio_data * 32767).astype(np.int16)
+        audio_int16 = (audio_data * 32767).astype("int16")
 
         # Create an AudioData object for recognizer
         audio_bytes = audio_int16.tobytes()

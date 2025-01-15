@@ -3,4 +3,3 @@ fuzzywuzzy
 SpeechRecognition
 gtts
 streamlit
-PyAudio

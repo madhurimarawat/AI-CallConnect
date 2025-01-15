@@ -8,7 +8,13 @@ You can access the deployed application at the following link: &nbsp;  [AI-CallC
 
 Here’s a preview of the app:
 
-<a href="https://ai-callconnect-tech-trio.streamlit.app/"><img src="Codes/images/website_view_1.png" width="100%"></a>
+<a href="https://ai-callconnect-tech-trio.streamlit.app/"><img src="Codes/images/Website_View_1.png" width="100%"></a> <br>
+
+<a href="https://ai-callconnect-tech-trio.streamlit.app/"><img src="Codes/images/Website_View_2.png" width="100%"></a> <br>
+
+<a href="https://ai-callconnect-tech-trio.streamlit.app/"><img src="Codes/images/Website_View_3.png" width="100%"></a> <br>
+
+<a href="https://ai-callconnect-tech-trio.streamlit.app/"><img src="Codes/images/Website_View_4.png" width="100%"></a>
 
 The project was developed as part of <a href= "https://unstop.com/hackathons/encode-2025-code-to-innovate-udgam-2025-iit-guwahati-1289240">**EnCode 2025 - Code to Innovate**</a>, a hackathon organized by the Indian Institute of Technology (IIT), Guwahati.
 

@@ -6,4 +6,3 @@ PyAudio
 gtts
 pygame
 streamlit
-PyAudio

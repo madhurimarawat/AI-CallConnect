@@ -50,9 +50,6 @@ import random
 # base64: A Python module used for encoding and decoding data in a format that is safe to use in URLs and filenames.
 import base64
 
-# streamlit.components.v1: A Python module used to add components streamlit components
-import streamlit.components.v1 as components
-
 # Setting the page title
 # This title will only be visible when running the app locally.
 # In the deployed app, the title will be displayed as "Title - Streamlit," where "Title" is the one we provide.
@@ -173,45 +170,25 @@ def find_answer(data, user_question):
     return random.choice(FALLBACK_MESSAGES)
 
 
-# Function to take voice input using browser-based Web Speech API
+# Function to take voice input from the user
+# This is not used in the deployment as streamlit is not allowing voice input libraries and system libraries like pyaudio
 def take_voice_input():
-    # HTML and JavaScript for capturing voice input
-    js_code = """
-    <script>
-        const recognition = new (window.SpeechRecognition || window.webkitSpeechRecognition)();
-        recognition.lang = 'en-US';
-        recognition.interimResults = false;
+    recognizer = sr.Recognizer()
+    mic = sr.Microphone()
+    st.write("Listening for your question... Please speak now.")
 
-        function startRecognition() {
-            recognition.start();
-            document.getElementById('status').innerText = "Listening...";
-        }
-
-        recognition.onresult = (event) => {
-            const transcript = event.results[0][0].transcript;
-            document.getElementById('user_question').value = transcript;
-            document.getElementById('status').innerText = "Voice input captured.";
-        };
-
-        recognition.onerror = (event) => {
-            document.getElementById('status').innerText = "Error: " + event.error;
-        };
-    </script>
-    <div>
-        <button onclick="startRecognition()">Speak Now</button>
-        <p id="status">Press the button to start listening.</p>
-        <input type="text" id="user_question" name="user_question" readonly style="width: 100%;">
-    </div>
-    """
-
-    # Embed the HTML and JavaScript in the Streamlit app
-    components.html(js_code, height=200)
-
-    # Create a text input field in Streamlit to capture the voice input
-    user_question = st.text_input("Your Question", key="user_question")
-
-    # Return the user's voice input
-    return user_question
+    with mic as source:
+        recognizer.adjust_for_ambient_noise(source)
+        try:
+            audio = recognizer.listen(source, timeout=5)
+            user_question = recognizer.recognize_google(audio)
+            return user_question
+        except sr.WaitTimeoutError:
+            return "No input detected."
+        except sr.UnknownValueError:
+            return "Sorry, I couldn't understand that."
+        except sr.RequestError:
+            return "Unable to connect to the recognition service."
 
 
 # Streamlit UI Homepage
@@ -243,15 +220,16 @@ def display_home_page():
     data = load_data(file_path)
 
     if data is not None and not data.empty:
-        # Take voice input from the user
-        if st.button("Speak Now"):
-            user_question = take_voice_input()
-            st.write(f"**You Asked:** {user_question}")
-
+        # Take text input from the user
+        user_question = st.text_input("Enter your question here:")
+        if st.button("Submit"):
             if user_question:
+                st.write(f"**You Asked:** {user_question}")
                 answer = find_answer(data, user_question)
                 st.write(f"**Response:** {answer}")
                 speak_text(answer)
+            else:
+                st.warning("Please enter a question to get a response.")
     else:
         st.error("No data available to process your questions.")
 

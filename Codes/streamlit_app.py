@@ -61,27 +61,20 @@ st.set_page_config(
 
 
 # Function to include background image and opacity
-def display_background_image(image_path, opacity):
+def display_background_image(url, opacity):
     """
     Displays a background image with a specified opacity on the web app using CSS.
 
     Args:
-    - image_path (str): Path to the local background image.
+    - url (str): URL of the background image.
     - opacity (float): Opacity level of the background image.
     """
-    # Read the image and encode it in base64
-    with open(image_path, "rb") as img_file:
-        encoded_string = base64.b64encode(img_file.read()).decode()
-
-    # Construct the URL for the background image
-    img_url = f"url(data:image/png;base64,{encoded_string})"
-
-    # Apply the background image with the given opacity
+    # Set background image using HTML and CSS
     st.markdown(
         f"""
         <style>
             body {{
-                background: {img_url} no-repeat center center fixed;
+                background: url('{url}') no-repeat center center fixed;
                 background-size: cover;
                 opacity: {opacity};
             }}
@@ -432,7 +425,7 @@ if __name__ == "__main__":
 
     # Display background with local image
     display_background_image(
-        "images/Illustration.webp",  # Local image path
+        "https://github.com/madhurimarawat/AI-CallConnect/raw/main/Codes/images/Illustration.webp",  # Local image path
         0.8,  # Opacity level
     )
 

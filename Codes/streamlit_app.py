@@ -56,7 +56,7 @@ import base64
 # If we don't set the title, it will default to "Streamlit"
 st.set_page_config(
     page_title="AI-CallConnect",
-    page_icon="images/Logo.webp",
+    page_icon="Codes/images/Logo.webp",
 )
 
 
@@ -126,7 +126,6 @@ def speak_text(text):
 
 # Helper function to encode audio file to base64
 def encode_audio(file_path):
-    import base64
 
     with open(file_path, "rb") as audio_file:
         audio_bytes = audio_file.read()
@@ -216,7 +215,7 @@ def display_home_page():
         st.session_state.greeting_spoken = True
 
     # Load the data
-    file_path = "data/final/question_answer.csv"
+    file_path = "Codes/data/final/question_answer.csv"
     data = load_data(file_path)
 
     if data is not None and not data.empty:
@@ -233,25 +232,11 @@ def display_home_page():
         st.error("No data available to process your questions.")
 
 
+# Function to display the project description
 def display_project_description():
-
-    image_path_logo = "images/Logo.webp"
-
-    # Read the image and encode it in base64
-    with open(image_path_logo, "rb") as img_file:
-        encoded_string = base64.b64encode(img_file.read()).decode()
-
-    # Construct the URL for the background image
-    img_url_logo = f"data:image/png;base64,{encoded_string}"
-
-    image_path_architecture = "images/System_Architecture.png"
-
-    # Read the image and encode it in base64
-    with open(image_path_architecture, "rb") as img_file:
-        encoded_string = base64.b64encode(img_file.read()).decode()
-
-    # Construct the URL for the background image
-    img_url_architecture = f"data:image/png;base64,{encoded_string}"
+    # URLs for images
+    img_url_logo = "https://github.com/madhurimarawat/AI-CallConnect/blob/main/Codes/images/Logo.webp?raw=true"
+    img_url_architecture = "https://github.com/madhurimarawat/AI-CallConnect/blob/main/Codes/images/System_Architecture.png?raw=true"
 
     st.markdown(
         f"""

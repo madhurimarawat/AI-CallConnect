@@ -447,7 +447,7 @@ if __name__ == "__main__":
 
     elif selected_section == "Resources":
         """
-        Lists resources and links relevant to the project, including stock data
+        Lists resources and links relevant to the project, including data
         sources and illustrations.
         """
         display_resources_information()
